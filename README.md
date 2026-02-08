@@ -12,9 +12,9 @@ Interactive GIS workflow (R + Leaflet) to map cumulative COVID-19 infection rate
 
 ---
 
-## Inputs (as used in the script)
-- ONSMapCOVID_EN.csv — cumulative COVID-19 rates by ONS neighbourhood (columns ONS ID, ONS Neighbourhood Name, Cumulative Rate Excluding Cases Linked to Outbreaks in LTCH & RH).
-- COVID DETERMINANTS IN ARC.xlsx — socioeconomic determinants table (auto-copied from covid_determinants_arc.xlsx if not present).
+## Inputs )
+- ONSMapCOVID_EN.csv â€” cumulative COVID-19 rates by ONS neighbourhood (columns ONS ID, ONS Neighbourhood Name, Cumulative Rate Excluding Cases Linked to Outbreaks in LTCH & RH).
+- COVID DETERMINANTS IN ARC.xlsx â€” socioeconomic determinants table
 - Shapefile: Shape file/shapefile/ONS_Boundaries_Gen2.shp (found automatically; any ONS Gen2 boundary shapefile works).
 - Config: config.R points data_dir to the project folder by default.
 
