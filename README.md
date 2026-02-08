@@ -19,7 +19,7 @@ Interactive GIS workflow (R + Leaflet) to map cumulative COVID-19 infection rate
 - Config: `config.R` points `data_dir` to the project folder by default.
 
 ### Determinant fields
-`population_density`, `median_income_after_tax`, `unemployment_rate`, `perc_public_transport_work`, `perc_newcomers`, `avg_household`, `job_density`, `perc_no_hs_diploma`, `perc_bachelors_and_above`, `perc_seniors` (plus log/sqrt transforms created in-script).
+Population density, median income after tax, unemployment rate, percentage commuting by public transit, percentage recent immigrants, average household size, job density, percentage without a high school diploma, percentage with a bachelor's degree or above, percentage aged 65 and over (plus log/sqrt transforms created in-script).
 
 ---
 
@@ -64,5 +64,4 @@ Open the map by double-clicking `outputs/interactive_map.html` (libs folder must
 - Local Moran’s I for cluster/outlier detection (spdep).
 - GWR and MGWR (GWmodel) for spatially varying effects.
 - Random forest for variable importance benchmark.
-
 

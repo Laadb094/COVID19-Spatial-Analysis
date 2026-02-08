@@ -387,7 +387,7 @@ if (!is.na(shapefile_path) && file.exists(shapefile_path)) {
       popup = popup_template,
       group = "Percent without high school diploma"
     ) %>%
-    addLegend("topright", pal = pal_nohs, values = joined_spatial_wgs$perc_no_hs_diploma, title = "Education disadvantage (% without High School diploma)", opacity = 0.9, group = "Percent without high school diploma") %>%
+    addLegend("topright", pal = pal_nohs, values = joined_spatial_wgs$perc_no_hs_diploma, title = "Education disadvantage (percentage without high school diploma)", opacity = 0.9, group = "Percent without high school diploma") %>%
     addPolygons(
       fillColor = ~pal_newcomer(perc_newcomers),
       color = "#555", weight = 0.6, smoothFactor = 0.3,
@@ -396,7 +396,7 @@ if (!is.na(shapefile_path) && file.exists(shapefile_path)) {
       popup = popup_template,
       group = "Recent immigrants"
     ) %>%
-    addLegend("topright", pal = pal_newcomer, values = joined_spatial_wgs$perc_newcomers, title = "Recent immigrants (%)", opacity = 0.9, group = "Recent immigrants") %>%
+    addLegend("topright", pal = pal_newcomer, values = joined_spatial_wgs$perc_newcomers, title = "Recent immigrants (percentage)", opacity = 0.9, group = "Recent immigrants") %>%
     addPolygons(
       fillColor = ~pal_transit(perc_public_transport_work),
       color = "#555", weight = 0.6, smoothFactor = 0.3,
@@ -405,7 +405,7 @@ if (!is.na(shapefile_path) && file.exists(shapefile_path)) {
       popup = popup_template,
       group = "Percent transit commuters"
     ) %>%
-    addLegend("topright", pal = pal_transit, values = joined_spatial_wgs$perc_public_transport_work, title = "Percent commuting by transit", opacity = 0.9, group = "Percent transit commuters") %>%
+    addLegend("topright", pal = pal_transit, values = joined_spatial_wgs$perc_public_transport_work, title = "Percentage commuting by transit", opacity = 0.9, group = "Percent transit commuters") %>%
     addPolygons(
       fillColor = ~pal_seniors(perc_seniors),
       color = "#555", weight = 0.6, smoothFactor = 0.3,
@@ -414,7 +414,7 @@ if (!is.na(shapefile_path) && file.exists(shapefile_path)) {
       popup = popup_template,
       group = "Percent age 65 and over"
     ) %>%
-    addLegend("topright", pal = pal_seniors, values = joined_spatial_wgs$perc_seniors, title = "Percent age 65 and over", opacity = 0.9, group = "Percent age 65 and over") %>%
+    addLegend("topright", pal = pal_seniors, values = joined_spatial_wgs$perc_seniors, title = "Percentage age 65 and over", opacity = 0.9, group = "Percent age 65 and over") %>%
     addPolygons(
       fillColor = ~pal_pred(pred_rate),
       color = "#555", weight = 0.6, smoothFactor = 0.3,
