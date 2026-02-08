@@ -339,7 +339,6 @@ if (!is.na(shapefile_path) && file.exists(shapefile_path)) {
   pal_transit  <- colorBin("YlOrRd", domain = joined_spatial_wgs$perc_public_transport_work, bins = bins_transit, na.color = "transparent")
   pal_seniors  <- colorBin("YlOrRd", domain = joined_spatial_wgs$perc_seniors, bins = bins_seniors, na.color = "transparent")
   pal_newcomer <- colorBin("YlOrRd", domain = joined_spatial_wgs$perc_newcomers, bins = bins_newcomer, na.color = "transparent")
-  pal_pred     <- colorNumeric(viridis(7, option = "B"), domain = joined_spatial_wgs$pred_rate, na.color = "transparent")
   pal_resid    <- colorNumeric("RdBu", domain = joined_spatial_wgs$resid_rate, na.color = "transparent", reverse = TRUE)
   pal_vuln     <- colorNumeric(inferno(9), domain = joined_spatial_wgs$vulnerability_index, na.color = "transparent")
 
@@ -416,15 +415,6 @@ if (!is.na(shapefile_path) && file.exists(shapefile_path)) {
     ) %>%
     addLegend("topright", pal = pal_seniors, values = joined_spatial_wgs$perc_seniors, title = "Percentage age 65 and over", opacity = 0.9, group = "Percent age 65 and over") %>%
     addPolygons(
-      fillColor = ~pal_pred(pred_rate),
-      color = "#555", weight = 0.6, smoothFactor = 0.3,
-      fillOpacity = 0.8,
-      label = ~sprintf("%s: %s predicted", label_name, comma(pred_rate, accuracy = 0.1)),
-      popup = popup_template,
-      group = "Predicted COVID-19 rate"
-    ) %>%
-    addLegend("topright", pal = pal_pred, values = joined_spatial_wgs$pred_rate, title = "Predicted COVID-19 rate (per 100k)", opacity = 0.9, group = "Predicted COVID-19 rate") %>%
-    addPolygons(
       fillColor = ~pal_resid(resid_rate),
       color = "#555", weight = 0.6, smoothFactor = 0.3,
       fillOpacity = 0.8,
@@ -451,14 +441,12 @@ if (!is.na(shapefile_path) && file.exists(shapefile_path)) {
         "Recent immigrants",
         "Percent transit commuters",
         "Percent age 65 and over",
-        "Predicted COVID-19 rate",
         "Model residuals (observed - predicted)",
         "Socioeconomic vulnerability (0–100)"
       ),
       options = layersControlOptions(collapsed = FALSE)
     ) %>%
     hideGroup(c(
-      "Predicted COVID-19 rate",
       "Model residuals (observed - predicted)",
       "Percent without high school diploma",
       "Recent immigrants",
