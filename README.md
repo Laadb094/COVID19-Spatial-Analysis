@@ -37,6 +37,9 @@ Outputs are written to `outputs/` inside `data_dir`. Shapefile is required for s
 - Diagnostics: `outputs/correlation_heatmap.png`, `outputs/covid_rate_hist.png`, `outputs/moran_scatterplot.png`, `outputs/ols_diagnostics.png`, `outputs/ols_residual_hist.png`, `outputs/rf_variable_importance.png`.
 - Interactive web map: `outputs/interactive_map.html` (+ assets in `outputs/interactive_map_libs/`).
 
+## Thesis
+- Full text: https://ruor.uottawa.ca/server/api/core/bitstreams/686dcb67-ea8a-4bc7-a744-47dc9c41c7d4/content
+
 ---
 
 ## Interactive Leaflet map (layers & controls)
@@ -61,6 +64,5 @@ Open the map by double-clicking `outputs/interactive_map.html` (libs folder must
 - Local Moran’s I for cluster/outlier detection (spdep).
 - GWR and MGWR (GWmodel) for spatially varying effects.
 - Random forest for variable importance benchmark.
-
 
 
