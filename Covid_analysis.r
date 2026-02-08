@@ -319,17 +319,6 @@ if (!is.na(shapefile_path) && file.exists(shapefile_path)) {
   }
 
   pal_rate <- colorNumeric(viridis(7, option = "C"), domain = joined_spatial_wgs$covid_rate, na.color = "transparent")
-  pal_cluster <- colorFactor(
-    palette = c(
-      "High-High (hot spot)" = "#d73027",
-      "Low-Low (cold spot)" = "#4575b4",
-      "High-Low (outlier)" = "#fdae61",
-      "Low-High (outlier)" = "#74add1",
-      "Not significant" = "#d9d9d9"
-    ),
-    domain = joined_spatial_wgs$local_cluster,
-    na.color = "transparent"
-  )
   bins_nohs     <- make_bins(joined_spatial_wgs$perc_no_hs_diploma, 5)
   bins_transit  <- make_bins(joined_spatial_wgs$perc_public_transport_work, 5)
   bins_seniors  <- make_bins(joined_spatial_wgs$perc_seniors, 5)
@@ -339,22 +328,28 @@ if (!is.na(shapefile_path) && file.exists(shapefile_path)) {
   pal_transit  <- colorBin("YlOrRd", domain = joined_spatial_wgs$perc_public_transport_work, bins = bins_transit, na.color = "transparent")
   pal_seniors  <- colorBin("YlOrRd", domain = joined_spatial_wgs$perc_seniors, bins = bins_seniors, na.color = "transparent")
   pal_newcomer <- colorBin("YlOrRd", domain = joined_spatial_wgs$perc_newcomers, bins = bins_newcomer, na.color = "transparent")
-  pal_resid    <- colorNumeric("RdBu", domain = joined_spatial_wgs$resid_rate, na.color = "transparent", reverse = TRUE)
   pal_vuln     <- colorNumeric(inferno(9), domain = joined_spatial_wgs$vulnerability_index, na.color = "transparent")
 
   popup_template <- sprintf(
-    "<b>%s</b><br/>COVID rate: %s per 100k<br/>Predicted: %s<br/>Residual: %+0.1f<br/>%% no HS diploma: %0.1f%%<br/>%% transit to work: %0.1f%%<br/>%% age 65+: %0.1f%%<br/>Vulnerability index: %0.0f",
+    "<b>%s</b><br/>COVID rate: %s per 100k<br/>%% without high school diploma: %0.1f%%<br/>%% commuting by transit: %0.1f%%<br/>%% age 65 and over: %0.1f%%<br/>%% recent immigrants: %0.1f%%<br/>Vulnerability index: %0.0f",
     joined_spatial_wgs$label_name,
     comma(joined_spatial_wgs$covid_rate, accuracy = 0.1),
-    comma(joined_spatial_wgs$pred_rate, accuracy = 0.1),
-    joined_spatial_wgs$resid_rate,
     joined_spatial_wgs$perc_no_hs_diploma,
     joined_spatial_wgs$perc_public_transport_work,
     joined_spatial_wgs$perc_seniors,
+    joined_spatial_wgs$perc_newcomers,
     joined_spatial_wgs$vulnerability_index
   )
 
   base_layers <- c("CartoDB.Positron", "Esri.WorldTopoMap", "Esri.WorldImagery")
+  overlay_groups <- c(
+    "COVID-19 cumulative rate",
+    "Percentage without high school diploma",
+    "Recent immigrants",
+    "Percentage transit commuters",
+    "Percentage age 65 and over",
+    "Socioeconomic vulnerability (0-100)"
+  )
 
   map <- leaflet(joined_spatial_wgs, options = leafletOptions(preferCanvas = TRUE)) %>%
     addProviderTiles(providers$CartoDB.Positron, group = "CartoDB.Positron") %>%
@@ -370,23 +365,14 @@ if (!is.na(shapefile_path) && file.exists(shapefile_path)) {
     ) %>%
     addLegend("topright", pal = pal_rate, values = joined_spatial_wgs$covid_rate, title = "COVID-19 cumulative rate (per 100k)", opacity = 0.9, group = "COVID-19 cumulative rate") %>%
     addPolygons(
-      fillColor = ~pal_cluster(local_cluster),
-      color = "#444444", weight = 0.6, smoothFactor = 0.3,
-      fillOpacity = 0.8,
-      label = ~sprintf("%s: %s (p = %.3f)", label_name, local_cluster, local_moran_p),
-      popup = ~sprintf("<b>%s</b><br/>Local Moran's I cluster: %s<br/>p-value: %.3f", label_name, local_cluster, local_moran_p),
-      group = "Local Moran's I clusters"
-    ) %>%
-    addLegend("topright", pal = pal_cluster, values = joined_spatial_wgs$local_cluster, title = "Local Moran's I clusters", opacity = 0.9, group = "Local Moran's I clusters") %>%
-    addPolygons(
       fillColor = ~pal_nohs(perc_no_hs_diploma),
       color = "#555", weight = 0.6, smoothFactor = 0.3,
       fillOpacity = 0.8,
       label = ~sprintf("%s: %0.1f%% without high school diploma", label_name, perc_no_hs_diploma),
       popup = popup_template,
-      group = "Percent without high school diploma"
+      group = "Percentage without high school diploma"
     ) %>%
-    addLegend("topright", pal = pal_nohs, values = joined_spatial_wgs$perc_no_hs_diploma, title = "Education disadvantage (percentage without high school diploma)", opacity = 0.9, group = "Percent without high school diploma") %>%
+    addLegend("topright", pal = pal_nohs, values = joined_spatial_wgs$perc_no_hs_diploma, title = "Percentage without high school diploma", opacity = 0.9, group = "Percentage without high school diploma") %>%
     addPolygons(
       fillColor = ~pal_newcomer(perc_newcomers),
       color = "#555", weight = 0.6, smoothFactor = 0.3,
@@ -402,75 +388,36 @@ if (!is.na(shapefile_path) && file.exists(shapefile_path)) {
       fillOpacity = 0.8,
       label = ~sprintf("%s: %0.1f%% transit commuters", label_name, perc_public_transport_work),
       popup = popup_template,
-      group = "Percent transit commuters"
+      group = "Percentage transit commuters"
     ) %>%
-    addLegend("topright", pal = pal_transit, values = joined_spatial_wgs$perc_public_transport_work, title = "Percentage commuting by transit", opacity = 0.9, group = "Percent transit commuters") %>%
+    addLegend("topright", pal = pal_transit, values = joined_spatial_wgs$perc_public_transport_work, title = "Percentage commuting by transit", opacity = 0.9, group = "Percentage transit commuters") %>%
     addPolygons(
       fillColor = ~pal_seniors(perc_seniors),
       color = "#555", weight = 0.6, smoothFactor = 0.3,
       fillOpacity = 0.8,
       label = ~sprintf("%s: %0.1f%% age 65 and over", label_name, perc_seniors),
       popup = popup_template,
-      group = "Percent age 65 and over"
+      group = "Percentage age 65 and over"
     ) %>%
-    addLegend("topright", pal = pal_seniors, values = joined_spatial_wgs$perc_seniors, title = "Percentage age 65 and over", opacity = 0.9, group = "Percent age 65 and over") %>%
-    addPolygons(
-      fillColor = ~pal_resid(resid_rate),
-      color = "#555", weight = 0.6, smoothFactor = 0.3,
-      fillOpacity = 0.8,
-      label = ~sprintf("%s residual: %+0.2f", label_name, resid_rate),
-      popup = popup_template,
-      group = "Model residuals (observed - predicted)"
-    ) %>%
-    addLegend("topright", pal = pal_resid, values = joined_spatial_wgs$resid_rate, title = "Residual (observed - predicted)", opacity = 0.9, group = "Model residuals (observed - predicted)") %>%
+    addLegend("topright", pal = pal_seniors, values = joined_spatial_wgs$perc_seniors, title = "Percentage age 65 and over", opacity = 0.9, group = "Percentage age 65 and over") %>%
     addPolygons(
       fillColor = ~pal_vuln(vulnerability_index),
       color = "#444", weight = 0.6, smoothFactor = 0.3,
       fillOpacity = 0.8,
       label = ~sprintf("%s: vulnerability index %0.0f", label_name, vulnerability_index),
       popup = popup_template,
-      group = "Socioeconomic vulnerability (0–100)"
+      group = "Socioeconomic vulnerability (0-100)"
     ) %>%
-    addLegend("topright", pal = pal_vuln, values = joined_spatial_wgs$vulnerability_index, title = "Socioeconomic vulnerability (0–100)", opacity = 0.9, group = "Socioeconomic vulnerability (0–100)") %>%
+    addLegend("topright", pal = pal_vuln, values = joined_spatial_wgs$vulnerability_index, title = "Socioeconomic vulnerability (0-100)", opacity = 0.9, group = "Socioeconomic vulnerability (0-100)") %>%
     addLayersControl(
       baseGroups = base_layers,
-      overlayGroups = c(
-        "COVID-19 cumulative rate",
-        "Local Moran's I clusters",
-        "Percent without high school diploma",
-        "Recent immigrants",
-        "Percent transit commuters",
-        "Percent age 65 and over",
-        "Model residuals (observed - predicted)",
-        "Socioeconomic vulnerability (0–100)"
-      ),
+      overlayGroups = overlay_groups,
       options = layersControlOptions(collapsed = FALSE)
     ) %>%
-    hideGroup(c(
-      "Model residuals (observed - predicted)",
-      "Percent without high school diploma",
-      "Recent immigrants",
-      "Percent transit commuters",
-      "Percent age 65 and over"
-    )) %>%
-    showGroup(c("COVID-19 cumulative rate", "Local Moran's I clusters", "Socioeconomic vulnerability (0–100)")) %>%
+    hideGroup(setdiff(overlay_groups, "COVID-19 cumulative rate")) %>%
     addScaleBar(position = "bottomleft", options = scaleBarOptions(imperial = FALSE, updateWhenIdle = TRUE)) %>%
     addMeasure(primaryLengthUnit = "meters", primaryAreaUnit = "sqmeters") %>%
     addMiniMap(tiles = providers$CartoDB.Positron, toggleDisplay = TRUE, minimized = TRUE) %>%
-    addEasyButton(
-      easyButton(
-        icon = "fa-list",
-        title = "Show/hide all legends",
-        onClick = JS("
-          function(btn, map){
-            var legs = document.getElementsByClassName('legend');
-            for (var i = 0; i < legs.length; i++) {
-              legs[i].style.display = (legs[i].style.display === 'none') ? 'block' : 'none';
-            }
-          }
-        ")
-      )
-    ) %>%
     addResetMapButton()
 
   htmlwidgets::saveWidget(
